@@ -11,6 +11,10 @@ from threading import Thread
 # importing the requests library 
 import urllib.request
 
+# importing configgen library
+sys.path.append('/usr/lib/python3.11/site-packages/configgen/settings/')
+from configgen.settings.keyValueSettings import keyValueSettings
+
 #CONSTANTS---------------------------------------------------------------------                             
 VERSION='1.0.0 09/12/2024'
 SOURCE_NAME='BozoTheGeek'
@@ -52,6 +56,18 @@ def Log(txt):
     #uncomment/comment the following line to activate/desactivate additional logs on this script
     print(formatted_time[:-3] + " - " + txt)
     return 0
+
+#find info from /tmp/es_state.inf 
+def getInfoFromESState(statefile, info):
+    ini = keyValueSettings(statefile, False)
+    ini.loadFile(True)
+    info_value = ini.getString(info, "Unknown")
+    del ini
+    if info_value != '':
+        Log('Info found, the ' + info + ' value is ' + info_value)
+    else:
+        Log('No ' + info + ' found !')
+    return info_value
 
 def fetch_url(url, params):
     """Fetches a URL with query parameters using urllib.request."""
@@ -182,12 +198,14 @@ def main():
   #Test Arg
   args=get_args()
   
-  if args.off:
-    players_light(4,True)
+  if args.off or (args.action == "shutdown") or (args.action == "reboot"):
+    #to power off all lights
+    players_light(nbplayers = 4,off = True)
     sys.exit(0)  
   
   if args.on:
-    players_light(4,False)
+    #to power on all lights
+    players_light(nbplayers = 4,off = False)
     buttons_light('n64')
     sys.exit(0)
   #init variables
@@ -195,11 +213,14 @@ def main():
   FullRomLocation = ""
   if args.action == "rungame":
     Log("args.action == rungame")
-    if args.param != '':
+    if args.statefile != '':
       #TODO: to get system from state file
-      System = "neogeo"
+      System = getInfoFromESState(args.statefile, "SystemId")
+    if args.param != '':
       Log("args.param : " + args.param)
       FullRomLocation = args.param
+
+
   else:
     if (args.system is None) or (args.rom is None) :
       print('For more information type -h as parameter')
