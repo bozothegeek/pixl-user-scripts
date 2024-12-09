@@ -214,8 +214,8 @@ def main():
   if args.action == "rungame":
     Log("args.action == rungame")
     if args.statefile != '':
-      #TODO: to get system from state file
       System = getInfoFromESState(args.statefile, "SystemId")
+      nbplayers = int(getInfoFromESState(args.statefile, "Players"))
     if args.param != '':
       Log("args.param : " + args.param)
       FullRomLocation = args.param
@@ -231,15 +231,6 @@ def main():
   Log('System parameter :' + System)
   Log('Rom parameter :' + FullRomLocation)
   
-  #Lecture Configuration
-  #config.load_from_file()
-  
-  #Execution des patchs
-  #gameListPatch = GameListPatcher(config,'console',args.mode)
-  #gameListPatch.start()
-  #gameListPatch.join()
-  
-  #Chargement XML avec MiniDom :-<
   #test 1 OK
   #System = 'mame'
   #FullRomLocation = '/recalbox/share/roms/mame/outrun.zip'
@@ -259,28 +250,10 @@ def main():
   Rom = FullRomLocation.split(System)[1]
   #to remove \ if necessary
   Rom = Rom.replace("\\","")
-  #gamesList = GamesList()
-  #try:
-  #gamesList.import_xml_file(RomsDirectory + System + os.sep + NOM_GAMELIST_XML,True)
-  #Log('Gamelist file imported:' + RomsDirectory + System + os.sep + NOM_GAMELIST_XML)
   Log('Rom to find : ' + Rom)
-  #game = gamesList.search_game_by_path ('.' + Rom)
-  
-  # if game.name != '':
-    # Log('file found, the game name is :' + game.name)
-  
-  # if game.players != '':
-    # Log('the number of player is : ' + game.players)
-    # nbplayers = int(game.players[-1])
-  # else:
-  
-  nbplayers = 4
   Log('the max number of player is : ' + str(nbplayers))
-  
   players_light(nbplayers)
-      
   buttons_light(System)
-  
   sys.exit(0)
 
 #---------------------------------------------------------------------------------------------------
